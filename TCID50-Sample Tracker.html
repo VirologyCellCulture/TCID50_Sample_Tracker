@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Eradivir Sample Tracking (view only)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f2f5f8;--card:#fff;--ink:#15293d;--mut:#617086;--line:#dde4ec;--navy:#17324d;--ok:#1f8a70;--warn:#d99a1e;--bad:#c4472f;--soft:#8aa4bd;--btn:#17324d;--btnt:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1620;--card:#162331;--ink:#e6edf5;--mut:#93a3b6;--line:#26384a;--navy:#8fb4d9;--ok:#3fb594;--warn:#e8b447;--bad:#e5735b;--soft:#4e6a86;--btn:#8fb4d9;--btnt:#0e1620;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1620;--card:#162331;--ink:#e6edf5;--mut:#93a3b6;--line:#26384a;--navy:#8fb4d9;--ok:#3fb594;--warn:#e8b447;--bad:#e5735b;--soft:#4e6a86;--btn:#8fb4d9;--btnt:#0e1620;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+main{max-width:1060px;margin:0 auto;padding:18px 16px 60px}
+h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 10px}
+.sub{color:var(--mut);font-size:13px;margin:2px 0 14px}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;flex-wrap:wrap}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:9px 14px;font:inherit;font-weight:500;color:var(--mut);cursor:pointer}
+nav button.on{color:var(--ink);border-bottom-color:var(--navy)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+.row{display:flex;gap:14px;flex-wrap:wrap}.row>*{flex:1 1 300px;min-width:0}
+label.f{display:block;font-size:13px;color:var(--mut);margin-bottom:10px}
+label.f span{display:block;margin-bottom:3px}
+input[type=file]{width:100%;font:inherit;font-size:13px;padding:8px;border:1px dashed var(--soft);border-radius:8px;background:var(--bg);color:var(--ink)}
+button.b{background:var(--btn);color:var(--btnt);border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;margin:2px 6px 2px 0}
+button.b:disabled{opacity:.4;cursor:not-allowed}button.b.alt{background:none;color:var(--ink);border:1px solid var(--line)}
+.nodl .dl{display:none}
+.kp{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.k{flex:1 1 130px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;padding:10px 12px}
+.k.ok{border-left-color:var(--ok)}.k.w{border-left-color:var(--warn)}.k.bd{border-left-color:var(--bad)}
+.k b{display:block;font:600 27px/1.2 "IBM Plex Mono",monospace}.k small{color:var(--mut);font-size:12px}
+.lg{display:flex;flex-direction:column;gap:5px;font-size:13px;margin-top:8px}
+.lg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px}
+.br{margin:12px 0}.br div.l{display:flex;justify-content:space-between;font-size:13px}.br .t{height:26px;background:var(--bg);border-radius:6px;overflow:hidden}.br .t i{display:block;height:100%}
+.sc{overflow-x:auto;max-height:420px}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);font-weight:600}table.n td+td,table.n th+th{text-align:right;font-family:"IBM Plex Mono",monospace}
+.m{padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px}.m.e{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}.m.g{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}.m.y{background:color-mix(in srgb,var(--warn) 18%,transparent)}
+.tg button{font-size:13px}
+th.sortable{cursor:pointer;user-select:none}th.sortable:hover{background:var(--bg)}.si{color:var(--mut);font-size:11px}
+table.sm td:first-child,table.sm th:first-child{position:sticky;left:0;background:var(--card);box-shadow:inset -1px 0 0 var(--line)}
+table.sm th:first-child{z-index:3}table.sm td:first-child{z-index:1}
+table.sm tr.tot td{font-weight:600}
+table.sm tr.el td{border-top:2px solid var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--card));font-weight:600}
+table.sm tr.el td:first-child{box-shadow:inset 4px 0 0 var(--ok),inset -1px 0 0 var(--line)}
+table.sm tr.l1 td{background:color-mix(in srgb,#3f86d0 12%,var(--card));border-top:2px solid #3f86d0;font-weight:600}
+table.sm tr.l1 td:first-child{box-shadow:inset 4px 0 0 #3f86d0,inset -1px 0 0 var(--line);padding-left:36px}
+table.sm tr.l2 td{background:color-mix(in srgb,#e8833a 13%,var(--card))}
+table.sm tr.l2.f td{border-top:2px solid #e8833a}
+table.sm tr.l2 td:first-child{box-shadow:inset 4px 0 0 #e8833a,inset -1px 0 0 var(--line);padding-left:62px}
+table.sm tr.l1 td:first-child::before,table.sm tr.l2 td:first-child::before,table.sm tr.l2 td:first-child::after{content:"";position:absolute;pointer-events:none}
+table.sm tr.l1 td:first-child::before{left:16px;top:0;height:50%;width:12px;border-left:2px solid #3f86d0;border-bottom:2px solid #3f86d0}
+table.sm tr.l2 td:first-child::before{left:38px;top:0;bottom:0;border-left:2px solid #e8833a}
+table.sm tr.l2.e td:first-child::before{bottom:auto;height:50%}
+table.sm tr.l2 td:first-child::after{left:38px;top:50%;width:14px;border-top:2px solid #e8833a}
+.era-h{display:flex;gap:12px;align-items:center;margin-bottom:12px}.era-b{background:var(--navy);color:var(--bg);font:600 15px "IBM Plex Mono",monospace;padding:8px 10px;border-radius:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.chip{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:16px;padding:4px 11px;font:inherit;font-size:12.5px;cursor:pointer}
+.era-l{min-height:200px;max-height:62vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 0}
+.msg{padding:9px 13px;border-radius:10px;max-width:92%;overflow-wrap:anywhere}.msg.u{align-self:flex-end;background:var(--navy);color:var(--bg)}.msg.a{align-self:flex-start;background:var(--bg);border:1px solid var(--line);width:92%}
+.era-in{display:flex;gap:8px;align-items:flex-end;margin-top:10px}.era-in textarea{flex:1;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);resize:vertical}
+#era-fab{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:19;background:var(--navy);color:var(--bg);border:0;border-radius:28px;padding:13px 20px;font:600 15px "IBM Plex Mono",monospace;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.28)}#era-fab[hidden]{display:none}
+#era{position:fixed;right:calc(12px + env(safe-area-inset-right,0px));top:calc(12px + env(safe-area-inset-top,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(400px,calc(100vw - 24px));z-index:20;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.3)}#era[hidden]{display:none}
+.era-top{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}.era-top .era-h{margin:0}#era-x{background:none;border:1px solid var(--line);border-radius:8px;font:600 13px "IBM Plex Sans",system-ui,sans-serif;color:var(--ink);cursor:pointer;padding:5px 14px}#era-x:hover{background:var(--bg)}
+.era-body{display:flex;flex-direction:column;flex:1;min-height:0;padding:12px}#era .era-l{flex:1;max-height:none;min-height:0}#era .chip{font-size:12px}#era input[type=file]{padding:5px}
+#era{overflow:hidden}.era-top{flex:none;gap:10px}.era-top .era-h{flex:1 1 auto;min-width:0}.era-top .era-h>div{min-width:0;flex:1}.era-b{flex:none}#era-src{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#era-x{flex:none;white-space:nowrap}.era-body{min-width:0}#toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:13px;display:none;z-index:9}
+</style></head><body><main>
+<h1>Eradivir Sample Tracking</h1>
+<p class="sub">Choose files from your computer. Everything is processed inside your browser, and nothing is uploaded. This is the view-only version: downloading files is turned off.</p>
+<nav id="nav"><button data-t="dash" class="on">Dashboard</button><button data-t="add">1. Add new samples</button><button data-t="upd">2. Update results</button></nav>
+
+<section id="dash"><div class="card"><div id="drv" class="m y" hidden></div><div id="keybox" hidden style="margin-bottom:10px"><label class="f"><span>Google API key (Drive API, read-only)</span><input type="text" id="keyin" placeholder="AIza..." autocomplete="off" style="width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)"></label><button class="b alt" id="keysave">Save key and load</button></div><button class="b" id="drv-btn">Refresh from Google Drive</button><label class="f" style="margin-top:10px"><span>Or choose a file from your computer</span><input type="file" id="f-dash" accept=".xlsx"></label></div><div id="dash-out"><div class="m y">Select a compiled tracking file to see the completion charts and the day-wise summary.</div></div></section>
+
+<section id="add" hidden><div class="row"><div class="card"><h2>Select files</h2><p class="sub">Merges a new tracking file into the latest compiled file, recalculates the Decision Rules and builds the sample list.</p>
+<label class="f"><span>New sample tracking file (e.g. STM_B#18_TCID50.xlsx)</span><input type="file" id="f-new" accept=".xlsx"></label>
+<label class="f"><span>Latest compiled file</span><input type="file" id="f-old" accept=".xlsx"></label>
+<button class="b" id="go-add" disabled>Run update</button></div><div id="add-out"></div></div></section>
+
+<section id="upd" hidden><div class="row"><div class="card"><h2>Select files</h2><p class="sub">Transfers TCID&#x2085;&#x2080; results from Sheet2 of the result file into the compiled tracking file.</p>
+<label class="f"><span>Compiled tracking file (C1)</span><input type="file" id="f-c1" accept=".xlsx"></label>
+<label class="f"><span>Result file (A1), e.g. 20261026 Report EV25 Drug Trial.xlsx</span><input type="file" id="f-a1" accept=".xlsx"></label>
+<button class="b" id="go-upd" disabled>Update results</button></div><div id="upd-out"></div></div></section>
+<button id="era-fab" aria-label="Open ERA chat">ERA</button><aside id="era" hidden aria-label="ERA chat"><div class="era-top"><div class="era-h"><span class="era-b">ERA</span><div class="sub" style="margin:0"><b id="era-src">No file loaded</b></div></div><button id="era-x" aria-label="Exit ERA">Exit</button></div><div class="era-body">
+<label class="f"><span>Load a compiled file (or use the one open in the Dashboard)</span><input type="file" id="f-era" accept=".xlsx"></label>
+<div class="chips"><button class="chip">How many participant IDs are completed and not completed?</button><button class="chip">List participant IDs not completed and why</button><button class="chip">Which positive samples have no CT value?</button><button class="chip">Count samples by Study Day and qRT-PCR Result</button><button class="chip">Show Day-2 samples with a viral titre above 3</button></div>
+<div id="era-log" class="era-l"></div>
+<div class="era-in"><textarea id="era-in" rows="2" placeholder="e.g. Show all samples for participant 102-2090 with their titre and plate"></textarea><button class="b" id="era-send">Send</button><button class="b alt" id="era-stop" hidden>Stop</button></div>
+<p class="sub">ERA is an AI assistant. Your question and the query results it fetches (not the whole file) are sent to Claude to write the answer. ERA is read-only and never changes your files.</p></div></aside>
+</main><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sq=s=>String(s??"").replace(/\s+/g," ").trim(),lc=s=>sq(s).toLowerCase(),blank=v=>v==null||sq(v)==="";
+const empty=v=>blank(v)||["na","not done"].includes(lc(v)),isNum=v=>!blank(v)&&isFinite(Number(sq(v)));
+const TC="Viral Titre(log(TCID50/mL)",CT="qRT-PCR CT Value",BN="TCID50 Batch No",TD="TCID50 Date",DR="Decision Rule #",EL="TCID50 Eligible?",ID="Tube B ID",DAYS=[1,2,3,4,5,6,7,8];
+let DL=null;(async()=>{try{DL=window.claude?await claude.use("downloads"):null}catch(e){}if(!DL&&window.claude)document.body.classList.add("nodl")})();
+function toast(t){const e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",4500)}
+const guard=f=>async(...a)=>{try{await f(...a)}catch(e){toast(e.message||String(e))}};
+
+async function readX(file,sheet){
+  const wb=XLSX.read(await file.arrayBuffer(),{type:"array"}),n=sheet||wb.SheetNames[0],ws=wb.Sheets[n];
+  if(!ws)throw new Error("Sheet \u201c"+n+"\u201d was not found in "+file.name);
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:null,raw:false,dateNF:"yyyy-mm-dd"}).map(r=>{const o={};for(const k in r)o[sq(k)]=r[k]==null?null:String(r[k]);return o});
+  rows.cols=(XLSX.utils.sheet_to_json(ws,{header:1})[0]||[]).map(sq);return rows}
+function need(rows,cols,what){const h=rows.cols||[];const m=cols.filter(c=>!h.includes(c));if(m.length)throw new Error("Missing column(s) in "+what+": "+m.join(", "))}
+
+/* ---------- completion check + summary ---------- */
+function check(rows){
+  need(rows,[ID,TC],"the compiled file");
+  const g={},ign=[];let total=0,tested=0;
+  for(const r of rows){const id=sq(r[ID]);if(!id)continue;total++;const t=lc(r[TC]).replace(/\s/g,"");if(isNum(r[TC])||t==="na"||t==="<llod")tested++;
+    const m=id.match(/^([^-]+-[^-]+)-D(\d+)-[A-Za-z]$/);if(!m){ign.push(id);continue}(g[m[1]]??=[]).push({day:+m[2],v:r[TC],row:r})}
+  const ok=v=>{const t=lc(v).replace(/\s/g,"");return !blank(v)&&(t==="<llod"||t==="na"||isNum(v))};
+  const fd=a=>a.length?a.map(d=>"D"+d).join(", "):"";
+  const dcol=(rows.cols||[]).find(c=>/^date\s*collected$/i.test(c)),D1=e=>{for(const x of e.filter(x=>x.day===1)){const v=dcol&&x.row[dcol];if(!blank(v))return sq(v)}return ""};
+  const ids=Object.keys(g).sort().map(id=>{const e=g[id],days=[...new Set(e.map(x=>x.day))].sort((a,b)=>a-b),miss=DAYS.filter(d=>!days.includes(d)),gap=miss.filter(d=>d<Math.max(...days)),lastM=!days.includes(8),
+    bad=e.filter(x=>!ok(x.v)).sort((a,b)=>a.day-b.day),reason=[lastM?"D8 missing":"",bad.length?"Invalid Viral Titre: "+bad.map(x=>"D"+x.day+" = "+(blank(x.v)?"(blank)":sq(x.v))).join("; "):""].filter(Boolean).join("; ");
+    return{id,n:e.length,d1:D1(e),present:fd(days),missing:fd(miss),note:gap.length?"Missing "+fd(gap)+" (later samples present)":"",reason,done:!lastM&&!bad.length,gap:gap.length>0,lastM,hasBad:bad.length>0,rows:e}});
+  return{ids,total,tested,ign,cols:rows.cols,done:ids.filter(x=>x.done),not:ids.filter(x=>!x.done)}}
+function summary(rows){need(rows,["Study Day",TC,EL],"the compiled file");
+  const days=DAYS.map(d=>"Day-"+d),cnt=days.map(d=>{const s=rows.filter(r=>lc(r["Study Day"])===d.toLowerCase());let det=0,ll=0,ne=0,el=0;
+    for(const r of s){const t=sq(r[TC]),tl=t.toLowerCase().replace(/\s/g,"");if(t!==""&&isFinite(Number(t)))det++;else if(tl==="<llod")ll++;const e=lc(r[EL]);if(e==="no")ne++;else if(e==="yes")el++}
+    return{tot:s.length,ne,el,done:det+ll,det,ll}});
+  const sum=a=>a.reduce((x,y)=>x+y,0),R=(label,cls,k,bk)=>{const v=cnt.map(c=>c[k]),b=bk?cnt.map(c=>c[bk]):null;return{label,cls,vals:[...v,sum(v)],base:b&&[...b,sum(b)]}};
+  return{days:[...days,"Total"],rows:[R("Total samples","tot","tot"),R("Samples not eligible for TCID\u2085\u2080","ne","ne","tot"),R("Samples eligible for TCID\u2085\u2080","el","el","tot"),R("TCID\u2085\u2080 completed","l1","done","el"),R("Samples with detectable viral titers","l2 f","det","done"),R("Samples with viral titers <LLOD","l2 e","ll","done")]}}
+const sumFmt=s=>s.rows.map(r=>[r.label,...r.vals.map((v,j)=>r.base?v.toLocaleString()+" ("+(r.base[j]?(100*v/r.base[j]).toFixed(1):"0.0")+"%)":v.toLocaleString())]);
+const sumHtml=s=>{const f=sumFmt(s);return`<div class="sc"><table class="n sm"><thead><tr><th>Metric</th>${s.days.map(d=>`<th>${d}</th>`).join("")}</tr></thead><tbody>${s.rows.map((r,i)=>`<tr class="${r.cls}">${f[i].map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`};
+
+/* ---------- excel output ---------- */
+const NUMC=["Participant ID","BOX No.",DR],MIXC=[CT,BN,TC,"Previous Result"];
+function conv(c,v){if(v==null||v==="")return null;if(typeof v==="number")return v;if((NUMC.includes(c)||MIXC.includes(c)||c==="SL")&&isNum(v))return Math.round(Number(sq(v))*100)/100;return String(v)}
+function blob(sheets){const wb=XLSX.utils.book_new();for(const[n,aoa,w]of sheets){const ws=XLSX.utils.aoa_to_sheet(aoa);if(w)ws["!cols"]=w.map(x=>({wch:x}));XLSX.utils.book_append_sheet(wb,ws,n)}
+  return new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/octet-stream"})}
+const tabX=(cols,rows)=>["Sheet1",[cols,...rows.map(r=>cols.map(c=>conv(c,r[c])))],cols.map(c=>Math.min(Math.max(c.length,10),32))];
+function dlBtn(){return document.createElement("span")}
+
+/* ---------- rendering helpers ---------- */
+const tbl=(h,r,c="")=>`<div class="sc"><table class="${c}"><thead><tr>${h.map(x=>`<th>${esc(x)}</th>`).join("")}</tr></thead><tbody>${r.map(x=>`<tr>${x.map(y=>`<td>${esc(y)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+const kpi=(l,v,c="",s="")=>`<div class="k ${c}"><small>${l}</small><b>${Number(v).toLocaleString()}</b>${s?`<small>${s}</small>`:""}</div>`;
+const msg=(t,c)=>`<div class="m ${c}">${esc(t)}</div>`;
+const TOTAL_COLLECTED=2217,pc=(a,b)=>(100*a/Math.max(b,1)).toFixed(1);
+function sortTable(el,head,rows){
+  let st={c:-1,m:0};
+  const type=c=>{const v=rows.map(r=>r[c]).filter(x=>!blank(x));if(!v.length)return"t";if(v.every(isNum))return"n";if(v.every(x=>!isNaN(Date.parse(x))&&/\d{4}|\d+\/\d+/.test(String(x))))return"d";return"t"};
+  const draw=()=>{let r=rows.map((x,i)=>({x,i}));
+    if(st.c>=0){const c=st.c,t=type(c),key=v=>t==="n"?Number(v):t==="d"?Date.parse(v):String(v);
+      r.sort((p,q)=>{const a=p.x[c],b=q.x[c],ba=blank(a),bb=blank(b);if(ba||bb)return ba===bb?p.i-q.i:ba?1:-1;if(st.m===3)return p.i-q.i;
+        const A=key(a),B=key(b),k=t==="t"?A.localeCompare(B,undefined,{numeric:true,sensitivity:"base"}):A-B;return(st.m===2?-k:k)||p.i-q.i})}
+    el.innerHTML=`<p class="sub">${rows.length.toLocaleString()} participant ID(s). Click a column heading to sort: \u25B2 ascending, \u25BC descending, \u25CF cells with data first, then click again to reset.</p><div class="sc"><table><thead><tr>${head.map((h,i)=>`<th class="sortable" data-c="${i}" title="Click to sort">${esc(h)} <span class="si">${st.c===i?["","\u25B2","\u25BC","\u25CF"][st.m]:""}</span></th>`).join("")}</tr></thead><tbody>${r.map(o=>`<tr>${o.x.map(y=>`<td>${esc(y)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    el.querySelectorAll("th.sortable").forEach(th=>th.onclick=()=>{const c=+th.dataset.c;st=st.c!==c?{c,m:1}:st.m<3?{c,m:st.m+1}:{c:-1,m:0};draw()})};
+  draw()}
+function donut(p){const T=p.reduce((a,x)=>a+x.n,0)||1,R=70,C=2*Math.PI*R;let o=0;
+  const arcs=p.map(x=>{const l=C*x.n/T,s=`<circle r="${R}" cx="100" cy="100" fill="none" stroke="${x.c}" stroke-width="28" stroke-dasharray="${l} ${C-l}" stroke-dashoffset="${-o}" transform="rotate(-90 100 100)"/>`;o+=l;return s}).join("");
+  const dn=p[0].n+p[1].n;return`<svg viewBox="0 0 200 200" style="max-width:240px;display:block;margin:auto" role="img" aria-label="Participant completion donut"><circle r="${R}" cx="100" cy="100" fill="none" stroke="var(--bg)" stroke-width="28"/>${arcs}
+  <text x="100" y="92" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="26" fill="var(--ink)">${dn}/${T}</text><text x="100" y="108" text-anchor="middle" font-size="10.5" fill="var(--mut)">participants</text><text x="100" y="121" text-anchor="middle" font-size="10.5" fill="var(--mut)">completed Day 1-8</text><text x="100" y="135" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink)">(${(100*dn/T).toFixed(1)}%)</text></svg>
+  <div class="lg">${p.map(x=>`<span><i style="background:${x.c}"></i>${x.l} (${x.n} participant${x.n===1?"":"s"})</span>`).join("")}</div>`}
+function bars(a){const mx=Math.max(TOTAL_COLLECTED,...a.map(x=>x.n));return a.map(x=>`<div class="br"><div class="l"><span>${x.l}</span><b>${x.n.toLocaleString()}${x.p!=null?" ("+x.p+"%)":""}</b></div><div class="t"><i style="width:${100*x.n/mx}%;background:${x.c}"></i></div></div>`).join("")}
+
+let LATEST=null;
+function dash(rows,name){setData(rows,name);
+  const el=$("#dash-out");let c,s;try{c=check(rows);s=summary(rows)}catch(e){el.innerHTML=msg(e.message,"e");return}
+  const nd=c.done.length,nn=c.done.filter(x=>x.gap).length;
+  el.innerHTML=(c.ign.length?msg(c.ign.length+" Tube B ID(s) do not match xxx-xxxx-Dn-B and were left out of the ID check: "+c.ign.slice(0,6).join(", "),"e"):"")+
+   `<div class="row"><div class="card"><h2>Completion status: Participants</h2>${donut([{n:nd-nn,c:"var(--ok)",l:"Done, all 8 samples present"},{n:nn,c:"var(--warn)",l:"Done, with missing-day note"},{n:c.not.length,c:"var(--bad)",l:"Not done"}])}</div>
+   <div class="card"><h2>Completion status: Samples</h2>${bars([{l:"Total samples collected",n:TOTAL_COLLECTED,c:"var(--soft)"},{l:"Samples received with RT-PCR result",n:c.total,c:"#3f86d0",p:pc(c.total,TOTAL_COLLECTED)},{l:"TCID\u2085\u2080 tested",n:c.tested,c:"var(--ok)",p:pc(c.tested,TOTAL_COLLECTED)}])}<p class="sub">Bars and percentages are relative to the ${TOTAL_COLLECTED.toLocaleString()} samples collected. ${pc(c.tested,c.total)}% of the samples with an RT-PCR result are TCID\u2085\u2080 tested; ${(c.total-c.tested).toLocaleString()} samples with an RT-PCR result are not yet tested.</p></div></div>
+   <div class="card"><h2>Day-wise summary (Day-1 to Day-8)</h2>${sumHtml(s)}</div>
+   <div class="card"><div class="tg"><button class="b" id="t-d">Participant ID completed (${nd})</button><button class="b alt" id="t-n">Participant ID not completed (${c.not.length})</button><span id="dl-slot"></span></div><div id="idt" style="margin-top:10px"></div></div>`;
+  const show=d=>{d?sortTable($("#idt"),["Participant ID","Collection date (D1)","Samples present","Days present","Days missing","Note"],c.done.map(x=>[x.id,x.d1,x.n,x.present,x.missing,x.note])):sortTable($("#idt"),["Participant ID","Samples present","Days present","Days missing","Reason not completed"],c.not.map(x=>[x.id,x.n,x.present,x.missing,x.reason]));
+    $("#t-d").className="b"+(d?"":" alt");$("#t-n").className="b"+(d?" alt":"")};
+  $("#t-d").onclick=()=>show(1);$("#t-n").onclick=()=>show(0);show(1);
+  $("#dl-slot").appendChild(dlBtn("Save Completion_Check.xlsx",name.replace(/\.xlsx$/i,"")+"_Completion_Check.xlsx",()=>{
+    const hd=["ID","Samples present","Days present","Days missing"],dd=c.done.flatMap(x=>x.rows).sort((a,b)=>sq(a.row[ID])<sq(b.row[ID])?-1:1).map(x=>x.row);
+    return blob([["Done_IDs",[["Total unique IDs",c.ids.length],["IDs DONE",nd],["  Done - all 8 samples present",nd-nn],["  Done - with missing-day note",nn],[],["ID","Collection date (D1)","Samples present","Days present","Days missing","Note"],...c.done.map(x=>[x.id,x.d1,x.n,x.present,x.missing,x.note])],[40,18,16,34,28,50]],
+     ["Done_Dataset",[c.cols,...dd.map(r=>c.cols.map(k=>conv(k,r[k])))]],
+     ["Not_Done_IDs",[["Total unique IDs",c.ids.length],["IDs NOT DONE",c.not.length],[],[...hd,"Reason not done"],...c.not.map(x=>[x.id,x.n,x.present,x.missing,x.reason])],[40,16,34,28,60]],
+     ["Sample_Counts",[["Metric","Count"],["Total samples",c.total],["Samples tested",c.tested]],[28,12]]])}))}
+
+/* ---------- 1. add new samples (eradivir_v6) ---------- */
+function compile(N0,O0){
+  need(N0,[ID],"the new file");need(O0,[ID],"the compiled file");
+  const PH=[CT,BN,TD,TC],prep=rs=>rs.map(r=>{const o={};for(const k in r)if(k!=="SL"&&k!=="TCID50 Result")o[k]=r[k];o[ID]=sq(o[ID]);return o}).filter(r=>r[ID]).map(r=>{for(const c of PH)if(c in r&&["na","not done"].includes(lc(r[c])))r[c]=null;return r});
+  const O=prep(O0),N=prep(N0),warn=[];let cols=[...new Set([...O0.cols,...N0.cols])].filter(c=>c!=="SL"&&c!=="TCID50 Result");
+  const seen=new Set(),dup=new Set();N.forEach(r=>{seen.has(r[ID])?dup.add(r[ID]):seen.add(r[ID])});if(dup.size)warn.push(dup.size+" duplicate Tube B ID(s) in the new file; the last nonblank value was kept.");
+  const mp=new Map();for(const r of [...O,...N]){let m=mp.get(r[ID]);if(!m){m={};mp.set(r[ID],m)}for(const c of cols)if(!blank(r[c]))m[c]=r[c]}
+  for(const c of [CT,BN,TD,TC,EL,DR])if(!cols.includes(c))cols.push(c);
+  const rows=[...mp.values()].map(m=>{for(const c of cols)if(!(c in m))m[c]=null;m._c=m[ID].slice(0,8);const d=m[ID].toUpperCase().match(/-D(\d+)-/);m._d=d?+d[1]:Infinity;return m});
+  rows.sort((a,b)=>a._c<b._c?-1:a._c>b._c?1:a._d-b._d||(a[ID]<b[ID]?-1:1));
+  let cur=null,r3=false,pr=null,pd=null;
+  for(const r of rows){if(r._c!==cur){cur=r._c;r3=false;pr=null;pd=null}
+    let res=lc(r["qRT-PCR Result"]);if(res==="negative")res="not detected";const day=isFinite(r._d)?r._d:null;let d=null;
+    if(r3)d=4;else if(res==="positive")d=1;else if(res==="not detected"){if(pr==="not detected"&&pd!=null&&day!=null&&day===pd+1){d=3;r3=true}else d=2}
+    r[DR]=d;r[EL]=d==null?null:d<=2?"Yes":"No";pr=res;pd=day}
+  const noct=[];
+  for(const r of rows){if(blank(r[CT])){if(lc(r["qRT-PCR Result"])==="positive")noct.push(r[ID]);r[CT]="NA"}
+    for(const c of [BN,TD,TC]){if(blank(r[c])){if(r[EL]==="No")r[c]="NA";else if(r[EL]==="Yes")r[c]="Not Done"}}}
+  if(noct.length)warn.push(noct.length+" positive sample(s) have no CT value: "+noct.slice(0,8).join(", "));
+  cols=cols.filter(c=>c!==DR);cols.splice(cols.indexOf(EL),0,DR);cols=["SL",...cols];rows.forEach((r,i)=>r.SL=i+1);
+  const SLC=["Participant ID","Subtype (Flu A / Flu B)","specific Subtype","Study Day","BOX No.","BOX Position",ID,CT,"qRT-PCR Result",DR,EL,TD,BN,TC].filter(c=>cols.includes(c)),nid=new Set(N.map(r=>r[ID]));
+  const sl=rows.filter(r=>nid.has(r[ID])).sort((a,b)=>a[ID]<b[ID]?-1:1),rc={};rows.forEach(r=>{const k=r[DR]==null?"No result yet":"Rule "+r[DR];rc[k]=(rc[k]||0)+1});
+  rows.cols=cols;return{rows,cols,sl,SLC,rc,nNew:nid.size,warn}}
+const outName=(oldN,newStem,what)=>{const a=oldN.match(/STM_B#[\d.]+_TCID50/),b=newStem.match(/STM_B#[\d.]+_TCID50/);if(!a||!b)throw new Error("Could not find STM_B#..._TCID50 in the "+what+" filenames.");return oldN.replace(a[0],b[0])};
+function openDash(rows,name){return b=>{b.onclick=()=>{nav("dash");dash(rows,name)}}}
+function openBtn(rows,name){const b=document.createElement("button");b.className="b";b.textContent="Open in Dashboard";b.onclick=()=>{nav("dash");dash(rows,name)};return b}
+
+$("#go-add").onclick=guard(async()=>{
+  const fn=$("#f-new").files[0],fo=$("#f-old").files[0];const [N,O]=[await readX(fn),await readX(fo)];
+  const nm=outName(fo.name,fn.name.replace(/\.xlsx$/i,""),"compiled and new"),r=compile(N,O),el=$("#add-out");
+  el.innerHTML=`<div>${r.warn.map(w=>msg(w,"y")).join("")}${msg("Update completed. Nothing on your computer was changed.","g")}<div class="kp">${kpi("New sample IDs",r.nNew)}${kpi("Total compiled records",r.rows.length)}${kpi("Records in sample list",r.sl.length)}</div><div class="card"><h2>Decision Rule summary</h2>${tbl(["Decision Rule #","Samples"],Object.entries(r.rc),"n")}<p class="sub">Updated compiled file: ${esc(nm)}</p><div id="add-b"></div></div></div>`;
+  const b=$("#add-b");b.append(dlBtn("Save updated compiled file",nm,()=>blob([tabX(r.cols,r.rows)])),dlBtn("Save sample list",fn.name.replace(/\.xlsx$/i,"")+"_sample_list.xlsx",()=>blob([tabX(r.SLC,r.sl)])),openBtn(r.rows,nm)) });
+
+/* ---------- 2. update results (Eradivir_Result_v6) ---------- */
+function updateRes(C0,A0,c1n,a1n){
+  const pre=c1n.replace(/\.xlsx$/i,"").replace(/_\d{8}$/,"");if(!/^Sample_Tracking_Compiled_STM_B#[\d.]+_TCID50$/.test(pre))throw new Error("Unexpected C1 filename format: "+c1n);
+  const dm=a1n.match(/^\d{8}/);if(!dm)throw new Error("The result file name must begin with an 8-digit date (YYYYMMDD): "+a1n);
+  need(C0,[ID,BN,TD,TC],"C1");need(A0,["Sample ID","Batch no","Date","Log TCID50"],"A1 Sheet2");
+  let cols=[...C0.cols];const add=(n,after)=>{if(cols.includes(n))return;const i=cols.indexOf(after);i<0?cols.push(n):cols.splice(i+1,0,n)};add("Notes");add("Plate",EL);add("Previous Result",TC);
+  const C=C0.map(r=>{const o={...r};for(const c of cols)if(!(c in o))o[c]=null;o[ID]=sq(o[ID]);o.Plate=blank(o.Plate)?null:sq(o.Plate);return o});
+  const ct=v=>{const t=sq(v);return blank(v)?null:isNum(t)?String(Math.round(Number(t)*100)/100):t};
+  const A=A0.map(r=>({id:sq(r["Sample ID"]),b:r["Batch no"],d:r["Date"],t:ct(r["Log TCID50"]),p:blank(r.Plate)?null:sq(r.Plate)})).filter(a=>a.id);
+  const app=(o,n)=>{o=o??"";n=n??"";return o===""?n:n===""?o:o+" | "+n},msgs=[],put=(r,a)=>{r[BN]=a.b;r[TD]=a.d;r[TC]=a.t;r.Plate=a.p};
+  A.forEach((a,i)=>{const n=i+1;
+    if(/^[^-]+-[^-]+-[^-]+-D$/.test(a.id)){const base=a.id.slice(0,-2),Bid=base+"-B",dr=C.filter(r=>r[ID]===a.id),br=C.filter(r=>r[ID]===Bid);
+      if(dr.length){for(const r of dr){if(empty(r[BN])&&empty(r[TC]))put(r,a);else msgs.push(["REPEAT D DATA FOUND",a.id,n])}return}
+      if(br.length){for(const r of br){const ob=r[BN],ot=r[TC],op=r.Plate;
+          if(!(empty(ob)&&empty(ot)))r.Notes=app(r.Notes,"Previous B result: TCID50 Batch No = "+(ob??"")+"; Viral Titre(log(TCID50/mL)) = "+(ot??""));
+          r[ID]=a.id;put(r,a);r.Notes=app(r.Notes,"B aliquot replaced by D aliquot ("+a.id+")");
+          if(!empty(op))r.Notes=app(r.Notes,"Previous B plate: "+op+" ("+Bid+")");if(!empty(ot))r["Previous Result"]=app(r["Previous Result"],ot)}return}
+      const bs=C.find(r=>r[ID].startsWith(base+"-"));
+      if(bs){const nr={...bs};nr[ID]=a.id;put(nr,a);nr.Notes=app(nr.Notes,"D aliquot added: "+a.id);C.push(nr);return}
+      msgs.push(["D aliquot found but no corresponding B/base ID in C1",a.id,n]);return}
+    const m=C.filter(r=>r[ID]===a.id);if(!m.length){msgs.push(["NO MATCH FOUND",a.id,n]);return}
+    for(const r of m){if(!empty(r[BN])||!empty(r[TC])){msgs.push(["REPEAT DATA FOUND",a.id,n]);continue}put(r,a);if(r[EL]==="No")msgs.push(["RESULT RECEIVED FOR TCID50 Eligible? = No",a.id,n])}});
+  for(const r of C)for(const c of [BN,TD,TC])if(empty(r[c])){if(r[EL]==="No")r[c]="NA";else if(r[EL]==="Yes")r[c]="Not Done"}
+  C.cols=cols;return{rows:C,cols,msgs,nA:A.length,name:pre+"_"+dm[0]+".xlsx",sum:summary(C)}}
+
+$("#go-upd").onclick=guard(async()=>{
+  const f1=$("#f-c1").files[0],fa=$("#f-a1").files[0],C=await readX(f1),A=await readX(fa,"Sheet2"),r=updateRes(C,A,f1.name,fa.name),el=$("#upd-out");
+  const sumName=r.name.replace(/\.xlsx$/i,"")+"_Day1_to_Day8_Summary.xlsx";
+  el.innerHTML=`<div>${msg("Results updated"+(r.msgs.length?" with "+r.msgs.length+" warning(s) / repeat(s), listed below.":".")+" Nothing on your computer was changed.","g")}
+   <div class="card"><h2>Day-wise summary (Day-1 to Day-8)</h2>${sumHtml(r.sum)}<p class="sub">Updated file: ${esc(r.name)} (${r.nA} result rows processed, ${r.rows.length} records)</p><div id="upd-b"></div></div>
+   <div class="card"><h2>Warnings / repeats</h2>${r.msgs.length?tbl(["Type","Sample ID","A1 row"],r.msgs):"<p class=sub>No repeat or unmatched data detected.</p>"}</div></div>`;
+  $("#upd-b").append(dlBtn("Save updated tracking file",r.name,()=>blob([tabX(r.cols,r.rows)])),dlBtn("Save summary",sumName,()=>blob([["Summary",[["Metric",...r.sum.days],...sumFmt(r.sum)],[45,14,14,14,14,14,14,14,14,14]]])),openBtn(r.rows,r.name))});
+
+/* ---------- ERA assistant ---------- */
+let DATA=null,LASTTBL=null,HIST=[],CTL=null;
+function setData(raw,name){const rows=raw.map(r=>{const m=sq(r[ID]).match(/^([^-]+-[^-]+)-D(\d+)-/);return{...r,"Unique ID":m?m[1]:null,"Day No":m?m[2]:null}});
+  DATA={raw,rows,name,cols:[...(raw.cols||[]),"Unique ID","Day No"]};const s=$("#era-src");if(s)s.textContent=name+" \u00b7 "+raw.length.toLocaleString()+" rows"}
+const colOf=n=>{const c=DATA.cols.find(x=>x.toLowerCase()===sq(n).toLowerCase());if(!c)throw new Error("Unknown column \u201c"+n+"\u201d. Available columns: "+DATA.cols.join(", "));return c};
+const needData=()=>{if(!DATA)throw new Error("No tracking file is loaded yet.")};
+const getChk=()=>DATA.chk??(DATA.chk=check(DATA.raw));
+function test(v,f){const a=lc(v),b=lc(f.value),an=isNum(v),bn=isNum(f.value),eq=a===b||(an&&bn&&Number(a)===Number(b));
+  switch(f.op){case"eq":return eq;case"neq":return !eq;case"contains":return a.includes(b);case"startswith":return a.startsWith(b);
+  case"in":return (Array.isArray(f.value)?f.value:String(f.value).split(",")).map(lc).includes(a);case"empty":return blank(v);case"not_empty":return !blank(v);case"is_number":return an;case"not_number":return !an;
+  default:{if(!an||!bn)return false;const x=Number(a),y=Number(b);return f.op==="gt"?x>y:f.op==="gte"?x>=y:f.op==="lt"?x<y:f.op==="lte"?x<=y:false}}}
+const nf=fs=>(fs||[]).map(f=>({...f,c:colOf(f.column)})),match=fs=>DATA.rows.filter(r=>fs.every(f=>test(r[f.c],f)));
+const FS={type:"array",description:"Row filters; all must match. Use op empty / not_empty for blank cells, is_number / not_number for numeric checks.",items:{type:"object",properties:{column:{type:"string"},op:{type:"string",enum:["eq","neq","contains","startswith","in","gt","gte","lt","lte","empty","not_empty","is_number","not_number"]},value:{description:"string, number, or array of strings for in"}},required:["column","op"]}};
+const TOOLS=[
+ {name:"describe_data",description:"List the columns of the loaded file with the number of distinct values and example values. Call this first if unsure about column names or values.",inputSchema:{type:"object",properties:{}},
+  execute:()=>{needData();return{file:DATA.name,rows:DATA.raw.length,columns:DATA.cols.map(c=>{const d=[...new Set(DATA.rows.map(r=>r[c]).filter(v=>!blank(v)))];return{column:c,distinct:d.length,examples:d.slice(0,d.length<=12?12:4)}})}}},
+ {name:"overview",description:"Headline numbers: unique participant IDs, Participant ID completed / not completed, samples received with RT-PCR result, TCID50 tested samples, and the Day-wise summary table (Day-1 to Day-8 plus total, with percentages).",inputSchema:{type:"object",properties:{}},
+  execute:()=>{needData();const o={file:DATA.name,rows:DATA.raw.length};try{const c=getChk();Object.assign(o,{unique_participant_ids:c.ids.length,participant_ids_completed:c.done.length,completed_all_8_samples_present:c.done.filter(x=>!x.gap).length,completed_with_missing_day_note:c.done.filter(x=>x.gap).length,participant_ids_not_completed:c.not.length,total_samples_collected:TOTAL_COLLECTED,samples_received_with_rtpcr_result:c.total,samples_tcid50_tested:c.tested})}catch(e){o.completion_error=e.message}
+   try{const s=summary(DATA.raw);o.day_summary={days:s.days,rows:sumFmt(s),note:"cells show count (percent). Percent bases: not eligible and eligible use total samples; TCID50 completed uses eligible samples; detectable and <LLOD use TCID50 completed. Total samples has no percent. Last column is the total across days."}}catch(e){o.summary_error=e.message}return o}},
+ {name:"id_status",description:"Completion status per Participant ID. Shows days present/missing and, for Participant IDs not completed, the reason. The full list is shown to the user automatically.",
+  inputSchema:{type:"object",properties:{status:{type:"string",enum:["all","done","not_done"]},id_contains:{type:"string",description:"Only IDs containing this text"},limit:{type:"number"}}},
+  execute:({status="all",id_contains,limit=40})=>{needData();const c=getChk();let a=status==="done"?c.done:status==="not_done"?c.not:c.ids;if(id_contains)a=a.filter(x=>x.id.includes(id_contains));
+   LASTTBL={cols:["Participant ID","Status","Samples present","Days present","Days missing","Note / reason"],rows:a.map(x=>[x.id,x.done?"Completed":"Not completed",x.n,x.present,x.missing,x.done?x.note:x.reason])};
+   return{total:a.length,columns:LASTTBL.cols,rows:LASTTBL.rows.slice(0,Math.min(limit||40,40))}}},
+ {name:"query_rows",description:"Find sample rows matching filters and choose which columns to return. Extra derived columns: \"Unique ID\" (e.g. 102-2575) and \"Day No\" (1-8). The full result is shown to the user automatically; you only receive the first 40 rows.",
+  inputSchema:{type:"object",properties:{filters:FS,columns:{type:"array",items:{type:"string"}},sort_by:{type:"string"},descending:{type:"boolean"}}},
+  execute:({filters,columns,sort_by,descending})=>{needData();const fs=nf(filters);let r=match(fs);
+   if(sort_by){const c=colOf(sort_by),d=descending?-1:1;r=[...r].sort((a,b)=>{const x=a[c],y=b[c];return(isNum(x)&&isNum(y)?Number(x)-Number(y):sq(x)<sq(y)?-1:sq(x)>sq(y)?1:0)*d})}
+   const cols=columns&&columns.length?columns.map(colOf):[ID,"Study Day","qRT-PCR Result",CT,EL,TC,BN,TD].filter(c=>DATA.cols.includes(c));
+   LASTTBL={cols,rows:r.map(x=>cols.map(c=>x[c]??""))};return{total_matches:r.length,columns:cols,rows:LASTTBL.rows.slice(0,40),note:r.length>40?"Only the first 40 rows are shown to you; the user sees the full table.":""}}},
+ {name:"count_by",description:"Count rows grouped by one or more columns, optionally after filtering.",inputSchema:{type:"object",properties:{group_by:{type:"array",items:{type:"string"}},filters:FS},required:["group_by"]},
+  execute:({group_by,filters})=>{needData();const g=group_by.map(colOf),fs=nf(filters),m=new Map();for(const r of match(fs)){const k=JSON.stringify(g.map(c=>r[c]??"(blank)"));m.set(k,(m.get(k)||0)+1)}
+   const rows=[...m].map(([k,n])=>[...JSON.parse(k),n]).sort((a,b)=>b[b.length-1]-a[a.length-1]);LASTTBL={cols:[...g,"Count"],rows};return{groups:rows.length,total_rows:rows.reduce((s,r)=>s+r[r.length-1],0),columns:LASTTBL.cols,rows:rows.slice(0,60)}}}];
+const SYS=`You are ERA, the AI assistant built into the Eradivir sample-tracking tool. You help staff find and summarise data in the currently loaded compiled tracking file by calling the provided tools, which are read-only.
+Rules: get every fact from the tools, never guess or invent IDs or values. If nothing matches, say so. State the filters you used. Tables returned by tools are shown to the user automatically, so answer in short prose and do not retype long tables (about 10 rows at most). If a result was truncated, say so. You cannot edit files. If asked what you are, say you are ERA, an AI assistant; never claim to be human, and do not deny being built on Claude if sincerely asked.
+Domain notes: Tube B ID such as 102-2575-D1-B means unique ID 102-2575, study day D1, aliquot B (a D aliquot is a repeat). The Viral Titre column holds a number, <LLOD (below limit), NA (not eligible) or Not Done (eligible, result pending). Decision Rule # 1 = positive, 2 = first not detected, 3 = second consecutive not detected, 4 = after rule 3. TCID50 Eligible? is Yes for rules 1-2 and No for rules 3-4. A participant ID counts as Participant ID completed (TCID\u2085\u2080 completed) when D8 is present and every sample has a numeric, <LLOD or NA titre; a missing earlier day is only a note; otherwise it is Participant ID not completed. TCID\u2085\u2080 tested means a sample with a numeric, <LLOD or NA titre. In your answers write TCID\u2085\u2080 with subscript digits (keep exact column names unchanged) and use the terms Participant ID completed, Participant ID not completed, Samples received with RT-PCR result and TCID\u2085\u2080 tested. Use overview or id_status for completion questions and query_rows or count_by for custom data requests.`;
+const fmt=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/^- /gm,"\u2022 ").replace(/\n/g,"<br>");
+function attachTbl(b,t){const d=document.createElement("div");d.innerHTML=`<p class="sub" style="margin-top:10px">${t.rows.length.toLocaleString()} row(s)${t.rows.length>300?", first 300 shown here":""}</p>`+tbl(t.cols,t.rows.slice(0,300).map(r=>r.map(sq)));
+  d.appendChild(dlBtn("Save table as Excel","ERA_result_"+new Date().toISOString().slice(0,10)+".xlsx",()=>blob([["Result",[t.cols,...t.rows.map(r=>r.map((v,i)=>conv(t.cols[i],v)))]]])));b.appendChild(d)}
+async function ask(q){
+  const log=$("#era-log");log.insertAdjacentHTML("beforeend",`<div class="msg u">${esc(q)}</div>`);
+  const b=document.createElement("div");b.className="msg a";b.innerHTML="<i>Thinking\u2026</i>";log.appendChild(b);log.scrollTop=log.scrollHeight;
+  if(!DATA){b.textContent="Please select a compiled tracking file first (above, or in the Dashboard).";return}
+  let sample=null;try{sample=window.claude?await claude.use("sample"):null}catch(e){}
+  if(!sample){b.textContent="ERA needs Claude access, which is only available when this page is opened from claude.ai.";return}
+  HIST.push({role:"user",content:q});let h=HIST.slice(-12);while(h.length&&h[0].role!=="user")h=h.slice(1);
+  const msgs=h.map((m,i)=>i===0?{...m,content:SYS+"\n\n"+m.content}:m);
+  LASTTBL=null;CTL=new AbortController();$("#era-stop").hidden=false;$("#era-send").disabled=true;
+  try{const r=await sample(msgs,{tools:TOOLS,cache:false,signal:CTL.signal,onText:({text})=>{if(text)b.innerHTML=fmt(text);log.scrollTop=log.scrollHeight}});
+    b.innerHTML=fmt(r.text||"(no answer)");HIST.push({role:"assistant",content:r.text||""});if(LASTTBL)attachTbl(b,LASTTBL)}
+  catch(e){HIST.pop();b.textContent=e.code==="not_granted"?"Access to Claude was declined, so ERA cannot answer.":e.code==="rate_limited"?"Too many requests. Please wait a moment and try again.":e.name==="AbortError"?"Stopped.":"ERA could not answer: "+(e.message||e.code)}
+  finally{CTL=null;$("#era-stop").hidden=true;$("#era-send").disabled=false;log.scrollTop=log.scrollHeight}}
+const send=()=>{const i=$("#era-in"),q=i.value.trim();if(!q||CTL)return;i.value="";guard(ask)(q)};
+$("#era-send").onclick=send;$("#era-in").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}};
+document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{$("#era-in").value=c.textContent;send()});
+$("#era-stop").onclick=()=>CTL&&CTL.abort();
+const eraOpen=o=>{$("#era").hidden=!o;$("#era-fab").hidden=o;if(o)$("#era-in").focus()};$("#era-fab").onclick=()=>eraOpen(true);$("#era-x").onclick=()=>eraOpen(false);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#era").hidden)eraOpen(false)});
+$("#f-era").onchange=guard(async e=>{const f=e.target.files[0];if(f){dash(await readX(f),f.name);toast("Loaded "+f.name)}});
+
+/* ---------- Google Drive auto-load ---------- */
+const DRIVE="Google Drive",FOLDER="16f0R2Ah0-DnKcEsGefsm8tNoUcmZ__KE";
+const drv=(t,c="")=>{const e=$("#drv");if(e){e.className="m "+c;e.textContent=t;e.hidden=!t}};
+function b64Of(res){let best="";const scan=v=>{if(typeof v==="string"){if(v.length>best.length&&/^[A-Za-z0-9+\/=_\s-]+$/.test(v.slice(0,300)))best=v}else if(v&&typeof v==="object")for(const k in v)scan(v[k])};scan(res&&res.structuredContent);scan(res&&res.payload);scan(res&&res.content);return best}
+function toBytes(s){const bin=atob(s.replace(/\s/g,"").replace(/-/g,"+").replace(/_/g,"/")),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
+function driveErr(e){const c=e&&e.code;
+  if(c==="server_not_connected"||c==="selection_required")return "Google Drive is not connected. Add it in claude.ai Settings > Connectors, then press Refresh.";
+  if(c==="needs_reauth")return "Google Drive needs to be reconnected in claude.ai Settings > Connectors, then press Refresh.";
+  if(["not_in_manifest","consent_required","approval_required","not_granted","blocked_by_policy"].includes(c))return "Access to Google Drive was not allowed for this page. Press Refresh and choose Allow, or select a file from your computer.";
+  if(c==="server_unavailable")return "Google Drive did not respond. Press Refresh to try again.";
+  return "Could not load from Google Drive: "+((e&&e.message)||c||"unknown error")}
+let drvBusy=false;
+async function driveLoad(){
+  if(drvBusy)return;drvBusy=true;$("#drv-btn").disabled=true;
+  try{const mcp=window.claude?await claude.use("mcp"):null;
+    if(!mcp){await viaApi();return}
+    drv("Loading the latest compiled file from Google Drive\u2026","y");
+    const r=await mcp.callTool(DRIVE,"search_files",{query:"parentId = '"+FOLDER+"' and trashed = false",orderBy:"modifiedTime desc",pageSize:30,excludeContentSnippets:true});
+    const all=((r.payload&&r.payload.files)||(r.structuredContent&&r.structuredContent.files)||[]).filter(f=>/\.xlsx$/i.test(f.title||"")),
+      pool=all.filter(f=>/^Sample_Tracking_Compiled/i.test(f.title)&&!/_Completion_Check|_Summary|_sample_list/i.test(f.title)),
+      f=(pool.length?pool:all).sort((a,b)=>String(b.modifiedTime).localeCompare(String(a.modifiedTime)))[0];
+    if(!f){drv("No .xlsx file was found in the Google Drive folder.","e");return}
+    const d=await mcp.callTool(DRIVE,"download_file_content",{fileId:f.id}),s=b64Of(d);
+    if(s.length<200)throw new Error("Google Drive did not return the file content.");
+    const u=toBytes(s);if(u[0]!==0x50||u[1]!==0x4b)throw new Error("The downloaded data is not an Excel (.xlsx) file.");
+    const rows=await readX(new File([u],f.title,{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+    dash(rows,f.title);drv("Loaded from Google Drive: "+f.title+" (modified "+new Date(f.modifiedTime).toLocaleString()+")","g")}
+  catch(e){drv(driveErr(e),"e")}finally{drvBusy=false;$("#drv-btn").disabled=false}}
+/* Outside Claude: read the shared folder through the Google Drive API (needs an API key). */
+const DRIVE_API_KEY="";/* optional: paste a Google API key here instead of typing it in the page */
+let memKey="";const gKey=()=>{if(DRIVE_API_KEY)return DRIVE_API_KEY;if(memKey)return memKey;try{return localStorage.getItem("eradivir_gkey")||""}catch(e){return""}};
+async function viaApi(){
+  const key=gKey(),kb=$("#keybox");
+  if(!key){kb.hidden=false;drv("Outside Claude, the page needs a Google API key to read the Drive folder. Enter it below once; it is remembered in this browser.","y");return}
+  kb.hidden=true;drv("Loading the latest compiled file from Google Drive\u2026","y");
+  const api=async(path,p)=>{let r;try{r=await fetch("https://www.googleapis.com/drive/v3/"+path+"?"+new URLSearchParams({...p,key,supportsAllDrives:"true"}))}catch(e){throw new Error("Could not reach Google Drive. Check the internet connection.")}
+    if(!r.ok){const m={400:"Google rejected the API key. Check that it is correct and that the Drive API is enabled for it.",403:"Google Drive refused access. Share the folder as Anyone with the link, and make sure the key is allowed to use the Drive API.",404:"The Drive folder or file was not found."};if(r.status===400||r.status===403)kb.hidden=false;throw new Error(m[r.status]||"Google Drive returned error "+r.status)}return r};
+  try{const l=await(await api("files",{q:"'"+FOLDER+"' in parents and trashed=false",orderBy:"modifiedTime desc",pageSize:"30",fields:"files(id,name,modifiedTime)",includeItemsFromAllDrives:"true"})).json();
+    const all=(l.files||[]).filter(f=>/\.xlsx$/i.test(f.name)),pool=all.filter(f=>/^Sample_Tracking_Compiled/i.test(f.name)&&!/_Completion_Check|_Summary|_sample_list/i.test(f.name)),f=(pool.length?pool:all)[0];
+    if(!f){drv("No .xlsx file was found in the Google Drive folder.","e");return}
+    const u=new Uint8Array(await(await api("files/"+f.id,{alt:"media"})).arrayBuffer());
+    if(u[0]!==0x50||u[1]!==0x4b)throw new Error("The downloaded data is not an Excel (.xlsx) file.");
+    dash(await readX(new File([u],f.name)),f.name);drv("Loaded from Google Drive: "+f.name+" (modified "+new Date(f.modifiedTime).toLocaleString()+")","g")}
+  catch(e){drv(e.message,"e")}}
+$("#keysave").onclick=()=>{const v=$("#keyin").value.trim();if(!v)return;memKey=v;try{localStorage.setItem("eradivir_gkey",v)}catch(e){}driveLoad()};
+if(!window.claude)$("#era-fab").hidden=true;
+$("#drv-btn").onclick=driveLoad;
+
+/* ---------- wiring ---------- */
+function nav(t){document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));["dash","add","upd"].forEach(s=>$("#"+s).hidden=s!==t)}
+$("#nav").onclick=e=>{if(e.target.dataset.t)nav(e.target.dataset.t)};
+$("#f-dash").onchange=guard(async e=>{const f=e.target.files[0];if(f)dash(await readX(f),f.name)});
+const pair=(a,b,btn)=>{const f=()=>$(btn).disabled=!($(a).files[0]&&$(b).files[0]);$(a).onchange=f;$(b).onchange=f};pair("#f-new","#f-old","#go-add");pair("#f-c1","#f-a1","#go-upd");driveLoad();
+</script></body></html>
