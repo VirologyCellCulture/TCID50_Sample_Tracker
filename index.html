@@ -327,7 +327,7 @@ async function driveLoad(){
     dash(rows,f.title);drv("Loaded from Google Drive: "+f.title+" (modified "+new Date(f.modifiedTime).toLocaleString()+")","g")}
   catch(e){drv(driveErr(e),"e")}finally{drvBusy=false;$("#drv-btn").disabled=false}}
 /* Outside Claude: read the shared folder through the Google Drive API (needs an API key). */
-const DRIVE_API_KEY="";/* optional: paste a Google API key here instead of typing it in the page */
+const DRIVE_API_KEY="AIzaSyAX9IIWNMujoH_VN8E9aKATxWErd0ZtUD4";/* optional: paste a Google API key here instead of typing it in the page */
 let memKey="";const gKey=()=>{if(DRIVE_API_KEY)return DRIVE_API_KEY;if(memKey)return memKey;try{return localStorage.getItem("eradivir_gkey")||""}catch(e){return""}};
 async function viaApi(){
   const key=gKey(),kb=$("#keybox");
